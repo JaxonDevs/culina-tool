@@ -115,6 +115,37 @@ app.post('/api/recipes', async (req, res) => {
     }
 });
 
+let needsSetup = !process.env.LICENSE_KEY;
+
+app.get('/api/setup/status', (req, res) => {
+    res.json({ needsSetup });
+});
+
+const fs = require('fs');
+
+app.post('/api/setup', async (req, res) => {
+    const { licenseKey, geminiKey, adminName } = req.body;
+    try {
+        let envContent = `LICENSE_KEY=${licenseKey || 'test'}\n`;
+        if (geminiKey) envContent += `GEMINI_API_KEY=${geminiKey}\n`;
+        fs.writeFileSync(path.join(__dirname, '.env'), envContent);
+        
+        // Reload env
+        require('dotenv').config();
+        
+        // Ensure admin user exists
+        const users = await db.getUsers();
+        if (!users.find(u => u.role === 'admin')) {
+            await db.addUser({ name: adminName || 'Admin', role: 'admin', auth_id: adminName || 'Admin' });
+        }
+        
+        needsSetup = false;
+        res.json({ success: true });
+    } catch(e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.post('/api/recipes/ai-format', async (req, res) => {
     try {
         const prompt = `Extract the recipe details from the following text (which is an Instagram caption or messy recipe text). 
@@ -131,7 +162,7 @@ Text to process:
 ${req.body.text}`;
 
         const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) throw new Error("GEMINI_API_KEY is not set in the environment.");
+        if (!apiKey) throw new Error("GEMINI_API_KEY is not set in the environment. Please add it in the Setup Wizard or .env file.");
         const response = await axios.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: { response_mime_type: "application/json" }
