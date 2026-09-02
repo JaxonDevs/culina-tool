@@ -328,23 +328,41 @@ export default function App() {
           
           <form onSubmit={submitSetup} className="space-y-4">
             <div>
-              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase">
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase relative">
                 Admin Username 
-                <span title="The master username you will use to log into the admin dashboard." className="cursor-help"><Info size={14}/></span>
+                <span className="group cursor-help text-orange-500">
+                  <Info size={14}/>
+                  <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-56 p-2.5 bg-gray-900 text-white text-[11px] font-medium leading-tight rounded-lg shadow-xl z-50 normal-case">
+                    The master username you will use to log into the admin dashboard.
+                    <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                  </span>
+                </span>
               </label>
               <input required value={setupData.adminName} onChange={e => setSetupData({...setupData, adminName: e.target.value})} type="text" placeholder="e.g. jaxon" className="w-full p-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500" />
             </div>
             <div>
-              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase">
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase relative">
                 License Key
-                <span title="Your premium license key starting with ML-. Leave blank to use the free edition." className="cursor-help"><Info size={14}/></span>
+                <span className="group cursor-help text-orange-500">
+                  <Info size={14}/>
+                  <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-56 p-2.5 bg-gray-900 text-white text-[11px] font-medium leading-tight rounded-lg shadow-xl z-50 normal-case">
+                    Your premium license key starting with ML-. Leave blank to use the free edition.
+                    <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                  </span>
+                </span>
               </label>
               <input value={setupData.licenseKey} onChange={e => setSetupData({...setupData, licenseKey: e.target.value})} type="text" placeholder="Leave blank for Free Edition" className="w-full p-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500" />
             </div>
             <div>
-              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase">
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase relative">
                 Gemini API Key (Optional)
-                <span title="Your Google Gemini API key to enable the Magic AI Recipe Importer feature." className="cursor-help"><Info size={14}/></span>
+                <span className="group cursor-help text-orange-500">
+                  <Info size={14}/>
+                  <span className="hidden group-hover:block absolute bottom-full left-0 mb-2 w-56 p-2.5 bg-gray-900 text-white text-[11px] font-medium leading-tight rounded-lg shadow-xl z-50 normal-case">
+                    Your Google Gemini API key to enable the Magic AI Recipe Importer feature.
+                    <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                  </span>
+                </span>
               </label>
               <input value={setupData.geminiKey} onChange={e => setSetupData({...setupData, geminiKey: e.target.value})} type="password" placeholder="For the AI Importer" className="w-full p-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500" />
             </div>
