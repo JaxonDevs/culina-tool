@@ -311,6 +311,13 @@ export default function App() {
         alert("Setup failed: " + (data.error || "Unknown error"));
         return;
       }
+      
+      if (setupData.licenseKey && setupData.licenseKey.trim() !== '') {
+          alert(`✅ License Key Confirmed!\n\nCulina Tool Premium Edition activated successfully.`);
+      } else {
+          alert(`✅ Setup Complete!\n\nCulina Tool Free Edition activated.`);
+      }
+      
       window.location.reload();
     } catch(e) {
       alert("Could not connect to backend.");
