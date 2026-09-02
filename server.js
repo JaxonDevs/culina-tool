@@ -147,8 +147,10 @@ app.post('/api/setup', async (req, res) => {
         if (geminiKey) envContent += `GEMINI_API_KEY=${geminiKey}\n`;
         fs.writeFileSync(path.join(__dirname, '.env'), envContent);
         
-        // Reload env
-        require('dotenv').config();
+        // Reload env safely without restarting
+        if (finalLicense) process.env.LICENSE_KEY = finalLicense;
+        if (geminiKey) process.env.GEMINI_API_KEY = geminiKey;
+        require('dotenv').config({ override: true });
         
         // Ensure admin user exists
         const users = await db.getUsers();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, ChefHat, Clock, Users, ArrowLeft, Moon, Sun, Trash2, Import, UserPlus, LogIn, LogOut, ShieldCheck, CheckCircle, Calendar, Wand2 } from 'lucide-react';
+import { Search, Plus, ChefHat, Clock, Users, ArrowLeft, Moon, Sun, Trash2, Import, UserPlus, LogIn, LogOut, ShieldCheck, CheckCircle, Calendar, Wand2, Info } from 'lucide-react';
 
 export default function App() {
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -315,26 +315,35 @@ export default function App() {
   // --- Setup Wizard Screen ---
   if (isSetupPending) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 max-w-md w-full">
-          <div className="flex justify-center mb-6 text-orange-600"><ChefHat size={48}/></div>
-          <h1 className="text-2xl font-black text-center mb-2">Welcome to Mealie Lite</h1>
-          <p className="text-gray-500 text-center text-sm mb-8">Let's get your new recipe manager set up.</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 max-w-md w-full">
+          <div className="flex justify-center mb-6 text-orange-600 dark:text-orange-500"><ChefHat size={48}/></div>
+          <h1 className="text-2xl font-black text-center mb-2 text-gray-900 dark:text-gray-100">Welcome to Mealie Lite</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-center text-sm mb-8">Let's get your new recipe manager set up.</p>
           
           <form onSubmit={submitSetup} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Admin Username</label>
-              <input required value={setupData.adminName} onChange={e => setSetupData({...setupData, adminName: e.target.value})} type="text" placeholder="e.g. jaxon" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500" />
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase">
+                Admin Username 
+                <span title="The master username you will use to log into the admin dashboard." className="cursor-help"><Info size={14}/></span>
+              </label>
+              <input required value={setupData.adminName} onChange={e => setSetupData({...setupData, adminName: e.target.value})} type="text" placeholder="e.g. jaxon" className="w-full p-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">License Key</label>
-              <input value={setupData.licenseKey} onChange={e => setSetupData({...setupData, licenseKey: e.target.value})} type="text" placeholder="Leave blank for Free Edition" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500" />
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase">
+                License Key
+                <span title="Your premium license key starting with ML-. Leave blank to use the free edition." className="cursor-help"><Info size={14}/></span>
+              </label>
+              <input value={setupData.licenseKey} onChange={e => setSetupData({...setupData, licenseKey: e.target.value})} type="text" placeholder="Leave blank for Free Edition" className="w-full p-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Gemini API Key (Optional)</label>
-              <input value={setupData.geminiKey} onChange={e => setSetupData({...setupData, geminiKey: e.target.value})} type="password" placeholder="For the AI Importer" className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500" />
+              <label className="flex items-center gap-1 text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase">
+                Gemini API Key (Optional)
+                <span title="Your Google Gemini API key to enable the Magic AI Recipe Importer feature." className="cursor-help"><Info size={14}/></span>
+              </label>
+              <input value={setupData.geminiKey} onChange={e => setSetupData({...setupData, geminiKey: e.target.value})} type="password" placeholder="For the AI Importer" className="w-full p-3 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500" />
             </div>
-            <button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition-colors mt-4">Complete Setup</button>
+            <button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition-colors mt-4 shadow-md">Complete Setup</button>
           </form>
         </div>
       </div>
