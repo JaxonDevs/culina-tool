@@ -305,10 +305,15 @@ export default function App() {
   const submitSetup = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('/api/setup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(setupData) });
+      const res = await fetch('/api/setup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(setupData) });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        alert("Setup failed: " + (data.error || "Unknown error"));
+        return;
+      }
       window.location.reload();
     } catch(e) {
-      alert("Setup failed.");
+      alert("Could not connect to backend.");
     }
   };
 
