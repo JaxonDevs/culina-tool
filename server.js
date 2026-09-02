@@ -289,6 +289,58 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/api/admin/licenses', async (req, res) => {
+    res.json(await db.getLicenses());
+});
+
+app.post('/api/admin/licenses', async (req, res) => {
+    res.json(await db.generateLicense());
+});
+
+app.post('/api/verify-license', async (req, res) => {
+    const isValid = await db.verifyLicense(req.body.key);
+    res.json({ valid: isValid });
+});
+
+app.get('/api/admin/tunnel', async (req, res) => {
+    res.json({ token: await db.getTunnelToken() });
+});
+
+const { spawn } = require('child_process');
+let tunnelProcess = null;
+
+app.post('/api/admin/tunnel', async (req, res) => {
+    const { token, start } = req.body;
+    if (token !== undefined) {
+        await db.saveTunnelToken(token);
+    }
+    
+    if (start) {
+        if (tunnelProcess) {
+            tunnelProcess.kill();
+        }
+        const currentToken = await db.getTunnelToken();
+        if (currentToken) {
+            console.log("Starting Cloudflare Tunnel...");
+            tunnelProcess = spawn('cloudflared', ['tunnel', '--no-autoupdate', 'run', '--token', currentToken]);
+            tunnelProcess.stdout.on('data', data => console.log(`Tunnel: ${data}`));
+            tunnelProcess.stderr.on('data', data => console.log(`Tunnel Err: ${data}`));
+            res.json({ success: true, message: 'Tunnel started' });
+            return;
+        } else {
+            res.status(400).json({ error: 'No token found' });
+            return;
+        }
+    } else if (start === false && tunnelProcess) {
+        tunnelProcess.kill();
+        tunnelProcess = null;
+        res.json({ success: true, message: 'Tunnel stopped' });
+        return;
+    }
+    
+    res.json({ success: true });
+});
+
 // Serve frontend in production
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'frontend/dist')));

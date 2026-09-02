@@ -185,6 +185,25 @@ export default function App() {
     }
   };
 
+  const [licenses, setLicenses] = useState<any[]>([]);
+  const [tunnelToken, setTunnelToken] = useState('');
+  const [adminSubTab, setAdminSubTab] = useState('users');
+
+  const loadAdminData = async () => {
+    if (currentUser?.role !== 'admin') return;
+    try {
+      const res = await fetch('/api/admin/licenses');
+      setLicenses(await res.json());
+      const res2 = await fetch('/api/admin/tunnel');
+      const data2 = await res2.json();
+      setTunnelToken(data2.token);
+    } catch(e) {}
+  };
+
+  useEffect(() => {
+    if (tab === 'admin') loadAdminData();
+  }, [tab]);
+
   const generateInvite = async () => {
     try {
       const res = await fetch('/api/invites', {
@@ -555,71 +574,138 @@ export default function App() {
         {/* --- Admin Tab --- */}
         {tab === 'admin' && currentUser?.role === 'admin' && (
           <div className="animate-in fade-in max-w-3xl mx-auto">
-            <h2 className="text-3xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-3"><ShieldCheck className="text-blue-500" size={32}/> Admin Dashboard</h2>
+            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6">Admin Dashboard</h2>
             
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Create Invite Link</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">Generate a special URL to invite friends/family. You can optionally pre-provision their name.</p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                <input value={provName} onChange={e => setProvName(e.target.value)} type="text" placeholder="Their Name (Optional)" className="flex-1 p-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50 dark:bg-gray-900 dark:text-white" />
-                <button onClick={generateInvite} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-sm flex items-center justify-center gap-2 transition-colors">
-                  <LinkIcon size={18}/> Generate Link
-                </button>
+            <div className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
+              <button onClick={() => setAdminSubTab('users')} className={`pb-2 font-bold ${adminSubTab === 'users' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>Users & Invites</button>
+              <button onClick={() => setAdminSubTab('licenses')} className={`pb-2 font-bold ${adminSubTab === 'licenses' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>License Keys</button>
+              <button onClick={() => setAdminSubTab('tunnel')} className={`pb-2 font-bold ${adminSubTab === 'tunnel' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>Network Tunnel</button>
+            </div>
+
+            {adminSubTab === 'users' && (
+              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Users & Invites</h3>
+                  <button onClick={generateInvite} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
+                    <UserPlus size={16}/> Create Invite Link
+                  </button>
+                </div>
+                
+                {inviteLink && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl mb-6 border border-blue-100 dark:border-blue-800 flex items-center justify-between">
+                    <div className="font-mono text-sm break-all">{inviteLink}</div>
+                    <button onClick={() => {navigator.clipboard.writeText(inviteLink); alert("Copied!")}} className="ml-4 bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold shrink-0">Copy</button>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {users.map(u => (
+                    <div key={u.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+                      <div>
+                        <div className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                          {u.name} {u.role === 'admin' && <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {u.instagram && `IG: @${u.instagram}`} {u.tiktok && `TT: @${u.tiktok}`}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              
-              {generatedLink && (
-                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                  <p className="text-sm font-bold text-blue-700 dark:text-blue-400 mb-2">Invite Link Created:</p>
-                  <div className="flex gap-2">
-                    <input readOnly value={generatedLink} className="flex-1 bg-white dark:bg-gray-900 border border-blue-200 dark:border-blue-800 rounded-lg p-2 text-gray-800 dark:text-gray-200 font-mono text-sm" />
-                    <button onClick={() => { navigator.clipboard.writeText(generatedLink); alert("Copied!"); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 text-sm">Copy</button>
+            )}
+
+            {adminSubTab === 'licenses' && (
+              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">License Generator</h3>
+                  <button onClick={async () => {
+                    await fetch('/api/admin/licenses', { method: 'POST' });
+                    loadAdminData();
+                  }} className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors">
+                    + Generate New Key
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mb-4">You act as the master license server. Generate keys here and give them to your customers to activate their copies.</p>
+                
+                <div className="space-y-3">
+                  {licenses.map(l => (
+                    <div key={l.key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+                      <div className="font-mono font-bold text-purple-600 dark:text-purple-400">{l.key}</div>
+                      <div className="text-xs text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-md">{l.tier.toUpperCase()}</div>
+                    </div>
+                  ))}
+                  {licenses.length === 0 && <div className="text-center text-gray-500 text-sm">No licenses generated yet.</div>}
+                </div>
+              </div>
+            )}
+
+            {adminSubTab === 'tunnel' && (
+              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Cloudflare Zero Trust Tunnel</h3>
+                <p className="text-sm text-gray-500 mb-6">Expose your local Raspberry Pi to the public internet securely without opening router ports. Paste your Cloudflare Tunnel Token below.</p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Tunnel Token</label>
+                    <input value={tunnelToken} onChange={e => setTunnelToken(e.target.value)} type="password" placeholder="eyJhIjoi..." className="w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-blue-500 dark:text-white" />
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <button onClick={async () => {
+                      await fetch('/api/admin/tunnel', { method: 'POST', headers: { 'Content-Type': 'application/json'}, body: JSON.stringify({ token: tunnelToken }) });
+                      alert("Token saved!");
+                    }} className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-xl font-bold text-sm transition-colors">
+                      Save Token
+                    </button>
+                    <button onClick={async () => {
+                      await fetch('/api/admin/tunnel', { method: 'POST', headers: { 'Content-Type': 'application/json'}, body: JSON.stringify({ start: true }) });
+                      alert("Tunnel Starting! Check backend logs.");
+                    }} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors">
+                      Start Tunnel
+                    </button>
+                    <button onClick={async () => {
+                      await fetch('/api/admin/tunnel', { method: 'POST', headers: { 'Content-Type': 'application/json'}, body: JSON.stringify({ start: false }) });
+                    }} className="bg-red-100 text-red-600 hover:bg-red-200 px-4 py-2 rounded-xl font-bold text-sm transition-colors ml-auto">
+                      Stop
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Registered Users</h3>
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                {users.map(u => (
-                  <div key={u.id} className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                        {u.name} {u.role === 'admin' && <ShieldCheck size={14} className="text-blue-500"/>}
+              </div>
+            )}
+            
+            {/* --- RSS Sources Manager --- */}
+            {adminSubTab === 'users' && (
+              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-6">Discover Feed Sources (RSS)</h3>
+                <div className="space-y-3 mb-6">
+                  {sources.map(s => (
+                    <div key={s.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+                      <div>
+                        <div className="font-bold text-sm text-gray-800 dark:text-gray-200">{s.name}</div>
+                        <div className="text-xs text-gray-400 truncate max-w-[200px] sm:max-w-xs">{s.url}</div>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {u.instagram && `@${u.instagram} (IG)`} {u.tiktok && ` • @${u.tiktok} (TT)`}
-                      </span>
+                      <button onClick={() => deleteSource(s.id)} className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"><Trash2 size={16}/></button>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input id="sourceName" type="text" placeholder="Site Name" className="flex-1 p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500 dark:text-white text-sm" />
+                  <input id="sourceUrl" type="url" placeholder="RSS Feed URL" className="flex-2 p-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500 dark:text-white text-sm" />
+                  <button onClick={async () => {
+                    const n = (document.getElementById('sourceName') as HTMLInputElement).value;
+                    const u = (document.getElementById('sourceUrl') as HTMLInputElement).value;
+                    if(n&&u) {
+                      await fetch('/api/sources', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name:n, url:u})});
+                      (document.getElementById('sourceName') as HTMLInputElement).value = '';
+                      (document.getElementById('sourceUrl') as HTMLInputElement).value = '';
+                      loadSources();
+                    }
+                  }} className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl font-bold text-sm whitespace-nowrap transition-colors">Add Source</button>
+                </div>
               </div>
-            </div>
-
-            {/* Manage Discover Sources */}
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Discover Sources</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Add RSS feed URLs of your favorite food blogs to populate the Discover tab automatically.</p>
-              
-              <form onSubmit={handleAddSource} className="flex flex-col sm:flex-row gap-4 mb-6">
-                <input required value={newSourceName} onChange={e => setNewSourceName(e.target.value)} type="text" placeholder="Blog Name (e.g. Pinch of Yum)" className="flex-1 p-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50 dark:bg-gray-900 dark:text-white" />
-                <input required value={newSourceUrl} onChange={e => setNewSourceUrl(e.target.value)} type="url" placeholder="RSS Feed URL" className="flex-1 p-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-gray-50 dark:bg-gray-900 dark:text-white" />
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-sm transition-colors whitespace-nowrap">Add Source</button>
-              </form>
-
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                {sources.map(s => (
-                  <div key={s.id} className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-gray-800 dark:text-gray-200">{s.name}</div>
-                      <div className="text-xs text-blue-500">{s.url}</div>
-                    </div>
-                    <button onClick={() => handleDeleteSource(s.id)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded-full transition"><Trash2 size={16}/></button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
         )}
 

@@ -182,5 +182,44 @@ module.exports = {
             writeDB(data);
             resolve(true);
         });
+    },
+    getLicenses: () => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            resolve(data.licenses || []);
+        });
+    },
+    generateLicense: (tier = 'premium') => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            if (!data.licenses) data.licenses = [];
+            const key = 'ML-' + Math.random().toString(36).substring(2, 15).toUpperCase() + '-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            const newLicense = { key, tier, active: true, createdAt: new Date().toISOString(), usedBy: null };
+            data.licenses.push(newLicense);
+            writeDB(data);
+            resolve(newLicense);
+        });
+    },
+    verifyLicense: (key) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            if (!data.licenses) return resolve(false);
+            const license = data.licenses.find(l => l.key === key && l.active);
+            resolve(!!license);
+        });
+    },
+    getTunnelToken: () => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            resolve(data.tunnelToken || '');
+        });
+    },
+    saveTunnelToken: (token) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            data.tunnelToken = token;
+            writeDB(data);
+            resolve(true);
+        });
     }
 };
