@@ -346,6 +346,15 @@ app.post('/api/admin/tunnel', async (req, res) => {
 
 // Serve frontend in production
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
+
+app.use((req, res, next) => {
+    // If the request comes from the license server domain, serve the license UI instead of the Recipe App
+    if (req.hostname.includes('license.jaxsmu.com')) {
+        return res.sendFile(path.join(__dirname, 'license-dashboard.html'));
+    }
+    next();
+});
+
 app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });

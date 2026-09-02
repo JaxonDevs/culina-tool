@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mealie Lite - Master License Server</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800 p-8">
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+        <h1 class="text-3xl font-black mb-2 text-purple-600">Master License Server</h1>
+        <p class="text-gray-500 mb-8">Generate and manage premium license keys for your customers.</p>
+        
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Active Licenses</h2>
+            <button onclick="generateLicense()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">+ Generate New Key</button>
+        </div>
+
+        <div id="licenses" class="space-y-3">
+            <div class="text-gray-500">Loading licenses...</div>
+        </div>
+    </div>
+
+    <script>
+        async function loadLicenses() {
+            const res = await fetch('/api/admin/licenses');
+            const data = await res.json();
+            const container = document.getElementById('licenses');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-4">No licenses generated yet.</div>';
+                return;
+            }
+            container.innerHTML = data.map(l => `
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div class="font-mono font-bold text-purple-600">${l.key}</div>
+                    <div class="text-xs font-bold text-gray-500 bg-gray-200 px-2 py-1 rounded-md uppercase">${l.tier}</div>
+                </div>
+            `).join('');
+        }
+
+        async function generateLicense() {
+            await fetch('/api/admin/licenses', { method: 'POST' });
+            loadLicenses();
+        }
+
+        loadLicenses();
+    </script>
+</body>
+</html>
