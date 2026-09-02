@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, ChefHat, Clock, Users, ArrowLeft, Moon, Sun, Trash2, Import, UserPlus, LogIn, LogOut, ShieldCheck, Link as LinkIcon, CheckCircle, Calendar, Wand2 } from 'lucide-react';
+import { Search, Plus, ChefHat, Clock, Users, ArrowLeft, Moon, Sun, Trash2, Import, UserPlus, LogIn, LogOut, ShieldCheck, CheckCircle, Calendar, Wand2 } from 'lucide-react';
 
 export default function App() {
   const [recipes, setRecipes] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   
-  const [tab, setTab] = useState<'my-recipes' | 'discover' | 'single' | 'admin'>('my-recipes');
+  const [tab, setTab] = useState<'my-recipes' | 'discover' | 'single' | 'admin' | 'planner'>('my-recipes');
   const [urlInput, setUrlInput] = useState('');
   const [status, setStatus] = useState('');
   const [activeRecipe, setActiveRecipe] = useState<any>(null);
@@ -101,19 +101,7 @@ export default function App() {
     } catch(e) { console.error(e); }
   };
 
-  const handleAddSource = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSourceName || !newSourceUrl) return;
-    try {
-      await fetch('/api/sources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newSourceName, url: newSourceUrl })
-      });
-      setNewSourceName(''); setNewSourceUrl('');
-      loadSources();
-    } catch(e) { console.error(e); }
-  };
+
 
   const handleDeleteSource = async (id: number) => {
     if (!confirm('Delete this source?')) return;
@@ -381,7 +369,7 @@ export default function App() {
                     <div>
                       <span className="font-bold text-gray-800 dark:text-gray-100 text-lg block flex items-center gap-2">
                         {u.name}
-                        {u.role === 'admin' && <ShieldCheck size={16} className="text-blue-500" title="Admin"/>}
+                        {u.role === 'admin' && <ShieldCheck size={16} className="text-blue-500" />}
                       </span>
                     </div>
                     <ArrowLeft size={18} className="text-gray-400 rotate-180 shrink-0" />
@@ -515,7 +503,7 @@ export default function App() {
             
             <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
               <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, idx) => {
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
                   const dayMeals = mealPlans.filter(m => m.date === day);
                   return (
                     <div key={day} className="flex flex-col h-full bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -591,10 +579,10 @@ export default function App() {
                   </button>
                 </div>
                 
-                {inviteLink && (
+                {generatedLink && (
                   <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-2xl mb-6 border border-blue-100 dark:border-blue-800 flex items-center justify-between">
-                    <div className="font-mono text-sm break-all">{inviteLink}</div>
-                    <button onClick={() => {navigator.clipboard.writeText(inviteLink); alert("Copied!")}} className="ml-4 bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold shrink-0">Copy</button>
+                    <div className="font-mono text-sm break-all">{generatedLink}</div>
+                    <button onClick={() => {navigator.clipboard.writeText(generatedLink); alert("Copied!")}} className="ml-4 bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold shrink-0">Copy</button>
                   </div>
                 )}
 
@@ -685,7 +673,7 @@ export default function App() {
                         <div className="font-bold text-sm text-gray-800 dark:text-gray-200">{s.name}</div>
                         <div className="text-xs text-gray-400 truncate max-w-[200px] sm:max-w-xs">{s.url}</div>
                       </div>
-                      <button onClick={() => deleteSource(s.id)} className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"><Trash2 size={16}/></button>
+                      <button onClick={() => handleDeleteSource(s.id)} className="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full transition-colors"><Trash2 size={16}/></button>
                     </div>
                   ))}
                 </div>
