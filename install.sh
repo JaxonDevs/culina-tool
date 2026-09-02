@@ -23,34 +23,21 @@ fi
 echo "[OK] All dependencies found!"
 echo ""
 
-read -p "Enter your License Key (leave blank for Free Edition): " LICENSE_KEY
-if [ -z "$LICENSE_KEY" ]; then
-    LICENSE_KEY="free"
-fi
-
-read -p "Enter your Google Gemini API Key for AI features (Optional): " GEMINI_API_KEY
-
 echo ""
-echo "[1/4] Configuring Environment..."
-echo "LICENSE_KEY=$LICENSE_KEY" > .env
-if [ ! -z "$GEMINI_API_KEY" ]; then
-    echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> .env
-fi
-
-echo ""
-echo "[2/4] Installing Backend Dependencies..."
+echo "[1/3] Installing Backend Dependencies..."
 npm install
 npm install express cors body-parser cheerio axios rss-parser dotenv
 
 echo ""
-echo "[3/4] Installing Frontend and Building..."
+echo "[2/3] Installing Frontend and Building..."
 cd frontend
 npm install
 npm run build
 cd ..
 
 echo ""
-echo "[4/4] Setup Complete!"
+echo "[3/3] Setup Complete!"
 echo "=============================================="
 echo "To start Culina Tool, run ./start.sh"
+echo "Then open your browser to run the Setup Wizard!"
 echo "=============================================="

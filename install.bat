@@ -21,33 +21,32 @@ IF %ERRORLEVEL% NEQ 0 (
 echo [OK] All dependencies found!
 echo.
 
-set /p LICENSE_KEY="Enter your License Key (leave blank for Free Edition): "
-if "%LICENSE_KEY%"=="" set LICENSE_KEY=free
-
-set /p GEMINI_API_KEY="Enter your Google Gemini API Key for AI features (Optional): "
-
 echo.
-echo [1/4] Configuring Environment...
-echo LICENSE_KEY=%LICENSE_KEY% > .env
-if not "%GEMINI_API_KEY%"=="" (
-    echo GEMINI_API_KEY=%GEMINI_API_KEY% >> .env
-)
-
-echo.
-echo [2/4] Installing Backend Dependencies...
+echo [1/3] Installing Backend Dependencies...
 call npm install
 call npm install express cors body-parser cheerio axios rss-parser dotenv
 
 echo.
-echo [3/4] Installing Frontend and Building...
+echo [2/3] Installing Frontend and Building...
 cd frontend
 call npm install
 call npm run build
 cd ..
 
 echo.
+echo [3/3] Windows Startup Setup
+set /p ADD_STARTUP="Do you want Culina Tool to run automatically in the background when Windows starts? (y/n): "
+if /i "%ADD_STARTUP%"=="y" (
+    echo Set WshShell = CreateObject("WScript.Shell"^) > "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\culina-tool.vbs"
+    echo WshShell.Run chr(34^) ^& "%~dp0start.bat" ^& Chr(34^), 0 >> "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\culina-tool.vbs"
+    echo Set WshShell = Nothing >> "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\culina-tool.vbs"
+    echo [OK] Added to Windows Startup folder.
+)
+
+echo.
 echo [4/4] Setup Complete! 
 echo ==============================================
 echo To start Culina Tool, run start.bat
+echo Then open your browser and follow the Setup Wizard!
 echo ==============================================
 pause
