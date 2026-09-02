@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "=============================================="
-echo "      Mealie Lite - Installation Setup"
+echo "      Culina Tool - Installation Setup"
 echo "=============================================="
 echo ""
 
@@ -52,5 +52,5 @@ cd ..
 echo ""
 echo "[4/4] Setup Complete!"
 echo "=============================================="
-echo "To start Mealie Lite, run ./start.sh"
+echo "To start Culina Tool, run ./start.sh"
 echo "=============================================="

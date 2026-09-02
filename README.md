@@ -1,6 +1,6 @@
-# Mealie Lite
+# Culina Tool
 
-The modern, ultra-fast recipe manager built for the home cook. Mealie Lite features a sleek dashboard, custom RSS discovery feeds, meal planning, and an **AI-powered Instagram & TikTok Importer**.
+The modern, ultra-fast recipe manager built for the home cook. Culina Tool features a sleek dashboard, custom RSS discovery feeds, meal planning, and an **AI-powered Instagram & TikTok Importer**.
 
 ## Features
 
@@ -17,8 +17,8 @@ The modern, ultra-fast recipe manager built for the home cook. Mealie Lite featu
 1. Make sure you have [Node.js](https://nodejs.org/) and [Git](https://git-scm.com/) installed.
 2. Download the `download.bat` script, or run:
 ```bat
-git clone https://github.com/JaxonDevs/mealie-lite.git
-cd mealie-lite
+git clone https://github.com/JaxonDevs/culina-tool.git
+cd culina-tool
 install.bat
 ```
 3. Follow the prompts to enter your License Key and optional Google Gemini API key.
@@ -28,8 +28,8 @@ install.bat
 1. Make sure you have `node`, `npm`, and `git` installed.
 2. Clone and install:
 ```bash
-git clone https://github.com/JaxonDevs/mealie-lite.git
-cd mealie-lite
+git clone https://github.com/JaxonDevs/culina-tool.git
+cd culina-tool
 chmod +x install.sh start.sh
 ./install.sh
 ```

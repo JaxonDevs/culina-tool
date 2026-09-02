@@ -318,7 +318,7 @@ export default function App() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 max-w-md w-full">
           <div className="flex justify-center mb-6 text-orange-600 dark:text-orange-500"><ChefHat size={48}/></div>
-          <h1 className="text-2xl font-black text-center mb-2 text-gray-900 dark:text-gray-100">Welcome to Mealie Lite</h1>
+          <h1 className="text-2xl font-black text-center mb-2 text-gray-900 dark:text-gray-100">Welcome to Culina Tool</h1>
           <p className="text-gray-500 dark:text-gray-400 text-center text-sm mb-8">Let's get your new recipe manager set up.</p>
           
           <form onSubmit={submitSetup} className="space-y-4">
@@ -359,7 +359,7 @@ export default function App() {
         </button>
         
         <div className="flex flex-col items-center gap-2 text-orange-600 dark:text-orange-500 font-black text-4xl mb-12">
-          <ChefHat size={48} className="mb-2" /> Mealie Lite
+          <ChefHat size={48} className="mb-2" /> Culina Tool
           {inviteCode && <div className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full flex items-center gap-1 mt-2 border border-green-200"><CheckCircle size={14}/> Valid Invite Link Activated</div>}
         </div>
         
@@ -428,7 +428,7 @@ export default function App() {
       {/* Sidebar (Desktop) */}
       <aside className="hidden md:flex flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 sticky top-0 h-screen overflow-y-auto">
         <div className="p-6 flex items-center gap-2 text-orange-600 dark:text-orange-500 font-black text-2xl tracking-tight cursor-pointer" onClick={() => setTab('my-recipes')}>
-          <ChefHat size={32} /> Mealie Lite
+          <ChefHat size={32} /> Culina Tool
         </div>
         
         <nav className="flex-1 px-4 space-y-2 mt-4">
@@ -480,7 +480,7 @@ export default function App() {
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
           <div className="flex items-center gap-2 text-orange-600 dark:text-orange-500 font-black text-xl tracking-tight">
-            <ChefHat size={24} /> Mealie Lite
+            <ChefHat size={24} /> Culina Tool
           </div>
           <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}

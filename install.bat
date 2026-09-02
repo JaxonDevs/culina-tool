@@ -1,7 +1,7 @@
 @echo off
 setlocal
 echo ==============================================
-echo       Mealie Lite - Installation Setup
+echo       Culina Tool - Installation Setup
 echo ==============================================
 echo.
 
@@ -48,6 +48,6 @@ cd ..
 echo.
 echo [4/4] Setup Complete! 
 echo ==============================================
-echo To start Mealie Lite, run start.bat
+echo To start Culina Tool, run start.bat
 echo ==============================================
 pause
