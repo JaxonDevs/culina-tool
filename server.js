@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 const path = require('path');
 const db = require('./db');
 const scrapeRecipe = require('./scraper');
@@ -131,12 +132,15 @@ app.post('/api/setup', async (req, res) => {
         // --- SECURE LICENSE VALIDATION ---
         // This runs securely on the Node backend where the customer cannot modify it.
         if (finalLicense !== 'free') {
-            // Placeholder: Hook this up to your Gumroad/Stripe/LemonSqueezy server later!
-            // const verifyRes = await axios.post('https://your-license-server.com/verify', { key: finalLicense });
-            // if (!verifyRes.data.valid) throw new Error("Invalid License Key!");
-            
-            // For now, we will just accept anything that isn't 'free' as Premium.
-            console.log("Verifying Premium License: ", finalLicense);
+            try {
+                console.log("Verifying Premium License: ", finalLicense);
+                const verifyRes = await axios.post('https://license.jaxsmu.com/api/verify-license', { key: finalLicense });
+                if (!verifyRes.data.valid) {
+                    throw new Error("Invalid License Key! Please check your purchase.");
+                }
+            } catch (err) {
+                throw new Error("License validation failed: " + (err.response?.data?.error || err.message));
+            }
         }
 
         let envContent = `LICENSE_KEY=${finalLicense}\n`;
@@ -256,7 +260,6 @@ app.get('/api/discover', async (req, res) => {
     }
 });
 
-const axios = require('axios');
 app.get('/api/proxy-image', async (req, res) => {
     try {
         const imageUrl = req.query.url;
