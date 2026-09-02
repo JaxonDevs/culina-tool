@@ -817,10 +817,13 @@ export default function App() {
                   <div key={r.id} onClick={() => viewRecipe(r.id)} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group hover:shadow-md hover:border-orange-200 dark:hover:border-orange-900 transition-all cursor-pointer">
                     <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
                       {typeof r.image_url === 'string' && r.image_url.length > 5 ? (
-                        <img src={r.image_url.startsWith('http') ? `/api/proxy-image?url=${encodeURIComponent(r.image_url)}` : r.image_url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600"><ChefHat size={48}/></div>
-                      )}
+                      <>
+                        <img src={r.image_url.startsWith('http') ? `/api/proxy-image?url=${encodeURIComponent(r.image_url)}` : r.image_url} onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) { e.currentTarget.nextElementSibling.classList.remove('hidden'); e.currentTarget.nextElementSibling.classList.add('flex'); } }} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="hidden w-full h-full items-center justify-center text-gray-400 dark:text-gray-600 flex-col gap-2"><ChefHat size={48}/><span className="text-xs font-bold uppercase tracking-wide">No Image</span></div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 flex-col gap-2"><ChefHat size={48}/><span className="text-xs font-bold uppercase tracking-wide">No Image</span></div>
+                    )}
                     </div>
                     <div className="p-5 flex-1 flex flex-col">
                       <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg mb-2 leading-tight group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{r.title}</h3>
@@ -866,9 +869,12 @@ export default function App() {
                 <div key={r.url} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group hover:shadow-md transition-all">
                   <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
                     {r.image ? (
-                      <img src={`/api/proxy-image?url=${encodeURIComponent(r.image)}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <>
+                        <img src={`/api/proxy-image?url=${encodeURIComponent(r.image)}`} onError={(e) => { e.currentTarget.style.display = 'none'; if(e.currentTarget.nextElementSibling) { e.currentTarget.nextElementSibling.classList.remove('hidden'); e.currentTarget.nextElementSibling.classList.add('flex'); } }} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="hidden w-full h-full items-center justify-center text-gray-300 dark:text-gray-700 flex-col gap-2"><ChefHat size={40}/><span className="text-xs font-bold uppercase tracking-wide">No Image</span></div>
+                      </>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-700"><ChefHat size={40}/></div>
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-700 flex-col gap-2"><ChefHat size={40}/><span className="text-xs font-bold uppercase tracking-wide">No Image</span></div>
                     )}
                     <div className="absolute top-3 left-3 bg-white/90 dark:bg-black/70 backdrop-blur text-gray-800 dark:text-gray-100 text-[10px] uppercase font-black px-2.5 py-1 rounded-full">{r.source}</div>
                   </div>
