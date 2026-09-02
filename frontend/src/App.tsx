@@ -40,8 +40,6 @@ export default function App() {
   const [discoverRecipes, setDiscoverRecipes] = useState<any[]>([]);
   const [discoverFilter, setDiscoverFilter] = useState('All');
   const [sources, setSources] = useState<any[]>([]);
-  const [newSourceName, setNewSourceName] = useState('');
-  const [newSourceUrl, setNewSourceUrl] = useState('');
   const [showManualForm, setShowManualForm] = useState(false);
   
   // Manual Recipe State
