@@ -126,7 +126,20 @@ const fs = require('fs');
 app.post('/api/setup', async (req, res) => {
     const { licenseKey, geminiKey, adminName } = req.body;
     try {
-        let envContent = `LICENSE_KEY=${licenseKey || 'test'}\n`;
+        const finalLicense = licenseKey || 'free';
+        
+        // --- SECURE LICENSE VALIDATION ---
+        // This runs securely on the Node backend where the customer cannot modify it.
+        if (finalLicense !== 'free') {
+            // Placeholder: Hook this up to your Gumroad/Stripe/LemonSqueezy server later!
+            // const verifyRes = await axios.post('https://your-license-server.com/verify', { key: finalLicense });
+            // if (!verifyRes.data.valid) throw new Error("Invalid License Key!");
+            
+            // For now, we will just accept anything that isn't 'free' as Premium.
+            console.log("Verifying Premium License: ", finalLicense);
+        }
+
+        let envContent = `LICENSE_KEY=${finalLicense}\n`;
         if (geminiKey) envContent += `GEMINI_API_KEY=${geminiKey}\n`;
         fs.writeFileSync(path.join(__dirname, '.env'), envContent);
         

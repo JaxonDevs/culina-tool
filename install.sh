@@ -25,13 +25,7 @@ echo ""
 
 read -p "Enter your License Key (leave blank for Free Edition): " LICENSE_KEY
 if [ -z "$LICENSE_KEY" ]; then
-    LICENSE_KEY="test"
-fi
-
-if [ "$LICENSE_KEY" = "test" ]; then
-    echo "[INFO] Free Edition Activated."
-else
-    echo "[INFO] Premium License Activated."
+    LICENSE_KEY="free"
 fi
 
 read -p "Enter your Google Gemini API Key for AI features (Optional): " GEMINI_API_KEY

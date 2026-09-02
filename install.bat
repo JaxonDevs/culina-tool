@@ -22,12 +22,7 @@ echo [OK] All dependencies found!
 echo.
 
 set /p LICENSE_KEY="Enter your License Key (leave blank for Free Edition): "
-if "%LICENSE_KEY%"=="" set LICENSE_KEY=test
-if "%LICENSE_KEY%"=="test" (
-    echo [INFO] Free Edition Activated.
-) else (
-    echo [INFO] Premium License Activated.
-)
+if "%LICENSE_KEY%"=="" set LICENSE_KEY=free
 
 set /p GEMINI_API_KEY="Enter your Google Gemini API Key for AI features (Optional): "
 
