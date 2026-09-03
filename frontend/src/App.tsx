@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, ChefHat, Clock, Users, ArrowLeft, Moon, Sun, Trash2, Import, UserPlus, LogIn, LogOut, ShieldCheck, CheckCircle, Calendar, Wand2, Info } from 'lucide-react';
+import { Search, Plus, ChefHat, Clock, Users, ArrowLeft, Moon, Sun, Trash2, Import, UserPlus, LogIn, LogOut, ShieldCheck, CheckCircle, Calendar, Wand2, Info, ShoppingCart } from 'lucide-react';
 
 export default function App() {
   const [recipes, setRecipes] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [shoppingList, setShoppingList] = useState<any[]>([]);
   
-  const [tab, setTab] = useState<'my-recipes' | 'discover' | 'single' | 'admin' | 'planner'>('my-recipes');
+  const [tab, setTab] = useState<'my-recipes' | 'discover' | 'single' | 'admin' | 'planner' | 'shopping'>('my-recipes');
   const [urlInput, setUrlInput] = useState('');
   const [status, setStatus] = useState('');
   const [activeRecipe, setActiveRecipe] = useState<any>(null);
@@ -67,21 +68,52 @@ export default function App() {
     } catch(e) {}
   };
 
-  useEffect(() => {
-    if (currentUser) {
-      loadMealPlans();
-    } else {
-      setMealPlans([]);
-    }
-  }, [currentUser]);
-
   const loadMealPlans = async () => {
-    if(!currentUser) return;
     try {
       const res = await fetch(`/api/users/${currentUser.id}/meals`);
       setMealPlans(await res.json());
-    } catch(e) { console.error(e); }
+    } catch(e) {}
   };
+
+  const loadShoppingList = async () => {
+    try {
+      if (!currentUser) return;
+      const res = await fetch(`/api/users/${currentUser.id}/shopping`);
+      setShoppingList(await res.json());
+    } catch(e) {}
+  };
+
+  const addRecipeToShoppingList = async (recipe: any) => {
+    if (!currentUser) return;
+    try {
+      const items = (recipe.ingredients || []).map((ing: string) => ({ text: ing }));
+      if (items.length === 0) return alert('No ingredients to add!');
+      
+      const res = await fetch(`/api/users/${currentUser.id}/shopping/bulk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
+      });
+      if (res.ok) {
+        loadShoppingList();
+        alert(`${items.length} ingredients added to your Shopping List!`);
+      }
+    } catch(e) {
+      alert("Failed to add to shopping list.");
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      loadMealPlans();
+      loadShoppingList();
+    } else {
+      setMealPlans([]);
+      setShoppingList([]);
+    }
+  }, [currentUser]);
+
+
 
   const loadDiscover = async () => {
     try {
@@ -469,9 +501,15 @@ export default function App() {
             <Search size={20}/> Discover
           </button>
           {currentUser && (
+            <>
             <button onClick={() => setTab('planner')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-colors ${tab === 'planner' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}>
               <Calendar size={20}/> Meal Planner
             </button>
+            <button onClick={() => setTab('shopping')} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold transition-colors ${tab === 'shopping' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}>
+              <div className="flex items-center gap-3"><ShoppingCart size={20}/> Shopping List</div>
+              {shoppingList.length > 0 && <span className="bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full">{shoppingList.filter((i:any) => !i.checked).length}</span>}
+            </button>
+            </>
           )}
           {currentUser?.role === 'admin' && (
             <button onClick={() => setTab('admin')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-colors ${tab === 'admin' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-500' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}>
@@ -936,7 +974,10 @@ export default function App() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <div className="md:col-span-1">
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2"><span className="bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 p-2 rounded-lg">🛒</span> Ingredients</h3>
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 flex items-center gap-2"><span className="bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 p-2 rounded-lg">🛒</span> Ingredients</h3>
+                    {currentUser && <button onClick={() => addRecipeToShoppingList(activeRecipe)} title="Add all to Shopping List" className="p-2 bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-500/20 dark:hover:bg-orange-500/30 rounded-xl transition-colors"><ShoppingCart size={20}/></button>}
+                  </div>
                   <ul className="space-y-3">
                     {(activeRecipe.ingredients || []).map((i: string, idx: number) => (
                       <li key={idx} className="flex gap-3 text-gray-700 dark:text-gray-300 pb-3 border-b border-gray-100 dark:border-gray-700/50"><div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 shrink-0"></div> <span className="leading-relaxed">{i}</span></li>
@@ -954,6 +995,70 @@ export default function App() {
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {tab === 'shopping' && (
+          <div className="animate-in fade-in max-w-2xl mx-auto">
+            <div className="flex justify-between items-end mb-8">
+              <div>
+                <h2 className="text-3xl font-black text-gray-800 dark:text-gray-100 mb-2">Shopping List</h2>
+                <p className="text-gray-500 dark:text-gray-400">Everything you need for your upcoming meals.</p>
+              </div>
+              {shoppingList.length > 0 && (
+                <button onClick={async () => {
+                  if(confirm('Clear all items?')) {
+                    await fetch(`/api/users/${currentUser.id}/shopping`, { method: 'DELETE' });
+                    loadShoppingList();
+                  }
+                }} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 font-bold px-4 py-2 rounded-xl transition-colors">Clear All</button>
+              )}
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sm:p-8">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const input = form.elements.namedItem('item') as HTMLInputElement;
+                if (!input.value) return;
+                await fetch(`/api/users/${currentUser.id}/shopping`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ text: input.value, checked: false })
+                });
+                input.value = '';
+                loadShoppingList();
+              }} className="flex gap-3 mb-8">
+                <input name="item" type="text" placeholder="Add an item..." className="flex-1 p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-orange-500 dark:text-white" />
+                <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-xl transition-colors"><Plus size={24}/></button>
+              </form>
+
+              <div className="space-y-2">
+                {shoppingList.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400 dark:text-gray-600">
+                    <ShoppingCart size={48} className="mx-auto mb-4 opacity-50"/>
+                    <p>Your list is empty.</p>
+                  </div>
+                ) : (
+                  shoppingList.map((item: any) => (
+                    <div key={item.id} className={`flex items-center gap-3 p-3 rounded-xl group transition-colors ${item.checked ? 'bg-gray-50 dark:bg-gray-900/50 opacity-60' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
+                      <input type="checkbox" checked={item.checked} onChange={async (e) => {
+                        await fetch(`/api/shopping/${item.id}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ checked: e.target.checked })
+                        });
+                        loadShoppingList();
+                      }} className="w-5 h-5 accent-orange-500 rounded cursor-pointer" />
+                      <span className={`flex-1 text-lg transition-all ${item.checked ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-200'}`}>{item.text}</span>
+                      <button onClick={async () => {
+                        await fetch(`/api/shopping/${item.id}`, { method: 'DELETE' });
+                        loadShoppingList();
+                      }} className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 size={16}/></button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

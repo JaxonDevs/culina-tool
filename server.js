@@ -209,6 +209,37 @@ app.delete('/api/meals/:planId', async (req, res) => {
     res.json({ success: true });
 });
 
+app.get('/api/users/:userId/shopping', async (req, res) => {
+    res.json(await db.getShoppingList(req.params.userId));
+});
+
+app.post('/api/users/:userId/shopping', async (req, res) => {
+    res.json(await db.addShoppingItem(req.params.userId, req.body.text, req.body.checked));
+});
+
+app.post('/api/users/:userId/shopping/bulk', async (req, res) => {
+    const items = req.body.items || [];
+    for (const item of items) {
+        await db.addShoppingItem(req.params.userId, item.text, false);
+    }
+    res.json({ success: true });
+});
+
+app.put('/api/shopping/:itemId', async (req, res) => {
+    await db.updateShoppingItem(req.params.itemId, req.body.checked);
+    res.json({ success: true });
+});
+
+app.delete('/api/shopping/:itemId', async (req, res) => {
+    await db.deleteShoppingItem(req.params.itemId);
+    res.json({ success: true });
+});
+
+app.delete('/api/users/:userId/shopping', async (req, res) => {
+    await db.clearShoppingList(req.params.userId);
+    res.json({ success: true });
+});
+
 let discoverCache = { time: 0, items: [] };
 
 app.get('/api/discover', async (req, res) => {

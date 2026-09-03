@@ -197,5 +197,53 @@ module.exports = {
             writeDB(data);
             resolve(true);
         });
+    },
+    getShoppingList: (userId) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            resolve((data.shopping_list || []).filter(item => item.user_id === parseInt(userId)));
+        });
+    },
+    addShoppingItem: (userId, ingredient, checked = false) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            if (!data.shopping_list) data.shopping_list = [];
+            const newItem = { id: Date.now() + Math.floor(Math.random()*1000), user_id: parseInt(userId), text: ingredient, checked: checked };
+            data.shopping_list.push(newItem);
+            writeDB(data);
+            resolve(newItem);
+        });
+    },
+    updateShoppingItem: (itemId, checked) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            if (!data.shopping_list) return resolve(false);
+            const item = data.shopping_list.find(i => i.id === parseInt(itemId));
+            if (item) {
+                item.checked = checked;
+                writeDB(data);
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        });
+    },
+    deleteShoppingItem: (itemId) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            if (!data.shopping_list) return resolve(true);
+            data.shopping_list = data.shopping_list.filter(i => i.id !== parseInt(itemId));
+            writeDB(data);
+            resolve(true);
+        });
+    },
+    clearShoppingList: (userId) => {
+        return new Promise((resolve) => {
+            const data = readDB();
+            if (!data.shopping_list) return resolve(true);
+            data.shopping_list = data.shopping_list.filter(i => i.user_id !== parseInt(userId));
+            writeDB(data);
+            resolve(true);
+        });
     }
 };
