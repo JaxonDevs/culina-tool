@@ -6,6 +6,7 @@ export default function App() {
   const [users, setUsers] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [shoppingList, setShoppingList] = useState<any[]>([]);
+  const [ingredientSearch, setIngredientSearch] = useState('');
   
   const [tab, setTab] = useState<'my-recipes' | 'discover' | 'single' | 'admin' | 'planner' | 'shopping'>('my-recipes');
   const [urlInput, setUrlInput] = useState('');
@@ -850,7 +851,12 @@ export default function App() {
               </div>
             )}
 
-            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6">Recipe Collection</h2>
+            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-4">Recipe Collection</h2>
+            
+            <div className="mb-8">
+              <input value={ingredientSearch} onChange={e => setIngredientSearch(e.target.value)} type="text" placeholder="🔍 What's in your fridge? (e.g. chicken, rice...)" className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 dark:text-white transition-all text-lg font-medium" />
+            </div>
+
             {recipes.length === 0 ? (
               <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-gray-300 dark:border-gray-600">
                 <ChefHat size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
@@ -858,7 +864,13 @@ export default function App() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {recipes.map(r => (
+                {recipes.filter(r => {
+                  if (!ingredientSearch.trim()) return true;
+                  const terms = ingredientSearch.toLowerCase().split(',').map(t => t.trim()).filter(Boolean);
+                  if (terms.length === 0) return true;
+                  const allText = ((r.ingredients || []).join(' ') + ' ' + (r.title || '')).toLowerCase();
+                  return terms.every(term => allText.includes(term));
+                }).map(r => (
                   <div key={r.id} onClick={() => viewRecipe(r.id)} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col group hover:shadow-md hover:border-orange-200 dark:hover:border-orange-900 transition-all cursor-pointer">
                     <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
                       {typeof r.image_url === 'string' && r.image_url.length > 5 ? (
