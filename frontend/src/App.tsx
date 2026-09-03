@@ -976,7 +976,7 @@ export default function App() {
                 <div className="md:col-span-1">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 flex items-center gap-2"><span className="bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 p-2 rounded-lg">🛒</span> Ingredients</h3>
-                    {currentUser && <button onClick={() => addRecipeToShoppingList(activeRecipe)} title="Add all to Shopping List" className="p-2 bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-500/20 dark:hover:bg-orange-500/30 rounded-xl transition-colors"><ShoppingCart size={20}/></button>}
+                    {currentUser && <button onClick={() => addRecipeToShoppingList(activeRecipe)} className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-500/20 dark:text-orange-400 dark:hover:bg-orange-500/30 font-bold text-sm rounded-xl transition-colors"><Plus size={16}/> Add to List</button>}
                   </div>
                   <ul className="space-y-3">
                     {(activeRecipe.ingredients || []).map((i: string, idx: number) => (
